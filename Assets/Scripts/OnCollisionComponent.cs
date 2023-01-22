@@ -15,6 +15,5 @@ public class OnCollisionComponent : MonoBehaviour
         {
             _event.Invoke();
         }
-            Debug.Log("CollisinWithPlaye");
     }
 }

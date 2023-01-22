@@ -13,7 +13,6 @@ public class OnTriggerComponent : MonoBehaviour
         if(collision.tag == _tag)
         {
             _event.Invoke();
-            Debug.Log("CollisinWithPlaye");
         }
     }
 }

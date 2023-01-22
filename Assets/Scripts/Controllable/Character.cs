@@ -10,9 +10,10 @@ public class Character : MonoBehaviour, IControllable
     [SerializeField] private float _gravityOnGround = 2;
     [SerializeField] private float _frictionAir = 0.1f;
     [SerializeField] private float _frictionGround = 1f;
-    [Header("isGroundChecker")]
+    [Header("isColliderChecker")]
     [SerializeField] private float _checkGroundRadius = 0.4f;
     [SerializeField] private Transform _groundCheckerPivot;
+    [SerializeField] private Transform _roofCheckerPivot;
     [SerializeField] private LayerMask _groundMask;
 
     private CharacterController _controller;
@@ -20,7 +21,8 @@ public class Character : MonoBehaviour, IControllable
     private float _velocityGravity;
     private float _velocityMove;
     private float _friction;
-    private bool _isGrounded;
+    [SerializeField] private bool _isGrounded;
+    [SerializeField] private bool _isRoofed;
 
     private void Awake()
     {
@@ -29,7 +31,8 @@ public class Character : MonoBehaviour, IControllable
 
     private void FixedUpdate()
     {
-        _isGrounded = IsOnGround();
+        _isGrounded = ColliderChecker(_groundCheckerPivot);
+        _isRoofed = ColliderChecker(_roofCheckerPivot);
         if (_isGrounded)
         {
             _friction = _frictionGround;
@@ -41,6 +44,10 @@ public class Character : MonoBehaviour, IControllable
         else
         {
             _friction = _frictionAir;
+        }
+        if (_isRoofed)
+        {
+            _direction.y = 0;
         }
             
 
@@ -65,9 +72,9 @@ public class Character : MonoBehaviour, IControllable
         }
     }
 
-    private bool IsOnGround()
+    private bool ColliderChecker(Transform checkerPivot)
     {
-        bool result = Physics.CheckSphere(_groundCheckerPivot.position, _checkGroundRadius, _groundMask);
+        bool result = Physics.CheckSphere(checkerPivot.position, _checkGroundRadius, _groundMask);
         return result;
     }
 
@@ -75,6 +82,7 @@ public class Character : MonoBehaviour, IControllable
     {
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(_groundCheckerPivot.position, _checkGroundRadius);
+        Gizmos.DrawSphere(_roofCheckerPivot.position, _checkGroundRadius);
     }
 
     private void Movement()
