@@ -38,6 +38,7 @@ public class Character : MonoBehaviour, IControllable
             _friction = _frictionGround;
             if (_velocityGravity < 0)
             {
+                _direction.y = 0;
                 _velocityGravity = -_gravityOnGround;
             }
         }
@@ -48,8 +49,7 @@ public class Character : MonoBehaviour, IControllable
         if (_isRoofed)
         {
             _direction.y = 0;
-        }
-            
+        }     
 
 
         DoGravity();
@@ -93,7 +93,36 @@ public class Character : MonoBehaviour, IControllable
     public void Push()
     {
         _velocityGravity = 0;
-        _direction = -(Utils.GetMousePosition()-transform.position).normalized;
+
+        //_direction = -(Utils.GetMousePosition()-transform.position).normalized;
+        _direction = GetDirection(AngleBetweenTwoPints(Utils.GetMousePosition(), transform.position));
         _velocityMove = Mathf.Sqrt(_speed * 2 * _gravity);
+        Debug.Log(AngleBetweenTwoPints(Utils.GetMousePosition(), transform.position));
     }
+
+    private float AngleBetweenTwoPints(Vector3 pos1, Vector3 pos2) => Mathf.Atan2(pos1.y - pos2.y, pos1.x-pos2.x)* Mathf.Rad2Deg;
+
+    private Vector2 GetDirection(float angle)
+    {
+        
+        if(angle >= -22 && angle < 22)
+            return new Vector2(-1, 0);
+        if(angle >= 22 && angle < 66) 
+            return new Vector2(-0.5f, -0.25f);
+        if(angle>=66 && angle< 118)
+            return new Vector2(0,-1);
+        if (angle >= 118 && angle < 158)
+            return new Vector2(0.5f, -0.25f);
+        if (angle >= 158 || angle < -158)
+            return new Vector2(1, 0);
+        if (angle >= -158 && angle < -118)
+            return new Vector2(0.5f, 0.9f);
+        if (angle >= -118 && angle < -66)
+            return new Vector2(0, 1);
+        if (angle >= -66 && angle < -22)
+            return new Vector2(-0.5f, 0.9f);
+        return Vector2.zero;
+
+    }
+
 }
