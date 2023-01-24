@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3239767864424513806}
   - component: {fileID: 258719539}
   m_Layer: 0
-  m_Name: Stalagnits
+  m_Name: Spikes
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
