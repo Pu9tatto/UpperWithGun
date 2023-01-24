@@ -21,8 +21,8 @@ public class Character : MonoBehaviour, IControllable
     private float _velocityGravity;
     private float _velocityMove;
     private float _friction;
-    [SerializeField] private bool _isGrounded;
-    [SerializeField] private bool _isRoofed;
+    private bool _isGrounded;
+    private bool _isRoofed;
 
     private void Awake()
     {
@@ -61,23 +61,22 @@ public class Character : MonoBehaviour, IControllable
     {
         _velocityGravity += -_gravity * Time.fixedDeltaTime;
 
-        _controller.Move(Vector3.up * _velocityGravity * Time.fixedDeltaTime);
+        _controller.Move(_velocityGravity * Time.fixedDeltaTime * Vector3.up);
+    }
+    private void Movement()
+    {
+        _controller.Move(_velocityMove * Time.fixedDeltaTime * _direction);
     }
 
     private void DoFriction()
     {
-        if(_velocityMove > 0)
-        {
+        if(_velocityMove > 0)        
             _velocityMove-=_friction * Time.fixedDeltaTime;
-        }
+        
     }
 
-    private bool ColliderChecker(Transform checkerPivot)
-    {
-        bool result = Physics.CheckSphere(checkerPivot.position, _checkGroundRadius, _groundMask);
-        return result;
-    }
-
+    private bool ColliderChecker(Transform checkerPivot) => Physics.CheckSphere(checkerPivot.position, _checkGroundRadius, _groundMask);
+    
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -85,22 +84,14 @@ public class Character : MonoBehaviour, IControllable
         Gizmos.DrawSphere(_roofCheckerPivot.position, _checkGroundRadius);
     }
 
-    private void Movement()
-    {
-        _controller.Move(_direction * _velocityMove * Time.fixedDeltaTime);
-    }
 
     public void Push()
     {
         _velocityGravity = 0;
-
-        //_direction = -(Utils.GetMousePosition()-transform.position).normalized;
-        _direction = GetDirection(AngleBetweenTwoPints(Utils.GetMousePosition(), transform.position));
+   
+        _direction = GetDirection(Utils.AngleBetweenTwoPints(Utils.GetMousePosition(), transform.position));
         _velocityMove = Mathf.Sqrt(_speed * 2 * _gravity);
-        Debug.Log(AngleBetweenTwoPints(Utils.GetMousePosition(), transform.position));
     }
-
-    private float AngleBetweenTwoPints(Vector3 pos1, Vector3 pos2) => Mathf.Atan2(pos1.y - pos2.y, pos1.x-pos2.x)* Mathf.Rad2Deg;
 
     private Vector2 GetDirection(float angle)
     {
