@@ -8,7 +8,7 @@ public class Character : MonoBehaviour, IControllable
     [Header("Phisic")]
     [SerializeField] private float _gravity = 9.81f;
     [SerializeField] private float _gravityOnGround = 2;
-    [SerializeField] private float _frictionAir = 0.1f;
+    //[SerializeField] private float _frictionAir = 0.1f;
     [SerializeField] private float _frictionGround = 1f;
     [Header("isColliderChecker")]
     [SerializeField] private float _checkGroundRadius = 0.4f;
@@ -33,24 +33,6 @@ public class Character : MonoBehaviour, IControllable
     {
         _isGrounded = ColliderChecker(_groundCheckerPivot);
         _isRoofed = ColliderChecker(_roofCheckerPivot);
-        if (_isGrounded)
-        {
-            _friction = _frictionGround;
-            if (_velocityGravity < 0)
-            {
-                _direction.y = 0;
-                _velocityGravity = -_gravityOnGround;
-            }
-        }
-        else
-        {
-            _friction = _frictionAir;
-        }
-        if (_isRoofed)
-        {
-            _direction.y = 0;
-        }     
-
 
         DoGravity();
         DoFriction();
@@ -59,18 +41,29 @@ public class Character : MonoBehaviour, IControllable
 
     private void DoGravity()
     {
-        _velocityGravity += -_gravity * Time.fixedDeltaTime;
+        if( _isGrounded && _velocityGravity < 0)        
+            _velocityGravity = -_gravityOnGround;
+        else        
+            _velocityGravity += -_gravity * Time.fixedDeltaTime;        
 
         _controller.Move(_velocityGravity * Time.fixedDeltaTime * Vector3.up);
     }
     private void Movement()
     {
+        if (_isGrounded && _velocityMove < 0)
+            _direction.y = 0;
+        if (_isRoofed && _velocityMove > 0)
+            _direction.y = 0;
+
         _controller.Move(_velocityMove * Time.fixedDeltaTime * _direction);
     }
 
     private void DoFriction()
     {
-        if(_velocityMove > 0)        
+        if(_isGrounded)
+            _friction = _frictionGround;
+
+        if (_velocityMove > 0)        
             _velocityMove-=_friction * Time.fixedDeltaTime;
         
     }
